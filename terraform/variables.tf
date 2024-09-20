@@ -99,7 +99,7 @@ variable "automatic_channel_upgrade" {
   type        = string
 
   validation {
-    condition = contains( ["patch", "rapid", "stable"], var.automatic_channel_upgrade)
+    condition = contains( ["patch", "rapid", "node-image", "stable"], var.automatic_channel_upgrade)
     error_message = "The upgrade mode is invalid."
   }
 }
@@ -129,7 +129,7 @@ variable "sku_tier" {
 
 variable "kubernetes_version" {
   description = "Specifies the AKS Kubernetes version"
-  default     = "1.21.1"
+  default     = "1.30"
   type        = string
 }
 

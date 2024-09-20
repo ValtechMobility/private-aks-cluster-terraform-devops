@@ -29,12 +29,13 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   kubernetes_version               = var.kubernetes_version
   dns_prefix                       = var.dns_prefix
   private_cluster_enabled          = var.private_cluster_enabled
-  automatic_channel_upgrade        = var.automatic_channel_upgrade
+  automatic_upgrade_channel        = var.automatic_channel_upgrade
   sku_tier                         = var.sku_tier
   workload_identity_enabled        = var.workload_identity_enabled
   oidc_issuer_enabled              = var.oidc_issuer_enabled
   open_service_mesh_enabled        = var.open_service_mesh_enabled
   image_cleaner_enabled            = var.image_cleaner_enabled
+  image_cleaner_interval_hours     = 168
   azure_policy_enabled             = var.azure_policy_enabled
   http_application_routing_enabled = var.http_application_routing_enabled
 
@@ -45,10 +46,9 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     pod_subnet_id           = var.pod_subnet_id
     zones                   = var.default_node_pool_availability_zones
     node_labels             = var.default_node_pool_node_labels
-    node_taints             = var.default_node_pool_node_taints
-    enable_auto_scaling     = var.default_node_pool_enable_auto_scaling
-    enable_host_encryption  = var.default_node_pool_enable_host_encryption
-    enable_node_public_ip   = var.default_node_pool_enable_node_public_ip
+    auto_scaling_enabled    = var.default_node_pool_enable_auto_scaling
+    host_encryption_enabled = var.default_node_pool_enable_host_encryption
+    node_public_ip_enabled  = var.default_node_pool_enable_node_public_ip
     max_pods                = var.default_node_pool_max_pods
     max_count               = var.default_node_pool_max_count
     min_count               = var.default_node_pool_min_count
@@ -92,7 +92,6 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   }
 
   azure_active_directory_role_based_access_control {
-    managed                    = true
     tenant_id                  = var.tenant_id
     admin_group_object_ids     = var.admin_group_object_ids
     azure_rbac_enabled         = var.azure_rbac_enabled

@@ -2,13 +2,19 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.50"
+      version = "4.2.0"
     }
   }
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    key_vault {
+      purge_soft_delete_on_destroy    = true
+      recover_soft_deleted_key_vaults = true
+    }
+  }
+  resource_provider_registrations = "core"
 }
 
 terraform {
@@ -52,13 +58,13 @@ module "hub_network" {
     {
       name : "AzureFirewallSubnet"
       address_prefixes : var.hub_firewall_subnet_address_prefix
-      private_endpoint_network_policies_enabled : true
+      private_endpoint_network_policies_enabled : "Enabled"
       private_link_service_network_policies_enabled : false
     },
     {
       name : "AzureBastionSubnet"
       address_prefixes : var.hub_bastion_subnet_address_prefix
-      private_endpoint_network_policies_enabled : true
+      private_endpoint_network_policies_enabled : "Enabled"
       private_link_service_network_policies_enabled : false
     }
   ]
@@ -76,25 +82,25 @@ module "aks_network" {
     {
       name : var.default_node_pool_subnet_name
       address_prefixes : var.default_node_pool_subnet_address_prefix
-      private_endpoint_network_policies_enabled : true
+      private_endpoint_network_policies_enabled : "Enabled"
       private_link_service_network_policies_enabled : false
     },
     {
       name : var.additional_node_pool_subnet_name
       address_prefixes : var.additional_node_pool_subnet_address_prefix
-      private_endpoint_network_policies_enabled : true
+      private_endpoint_network_policies_enabled : "Enabled"
       private_link_service_network_policies_enabled : false
     },
     {
       name : var.pod_subnet_name
       address_prefixes : var.pod_subnet_address_prefix
-      private_endpoint_network_policies_enabled : true
+      private_endpoint_network_policies_enabled : "Enabled"
       private_link_service_network_policies_enabled : false
     },
     {
       name : var.vm_subnet_name
       address_prefixes : var.vm_subnet_address_prefix
-      private_endpoint_network_policies_enabled : true
+      private_endpoint_network_policies_enabled : "Enabled"
       private_link_service_network_policies_enabled : false
     }
   ]
@@ -173,8 +179,6 @@ module "aks_cluster" {
   default_node_pool_vm_size                = var.default_node_pool_vm_size
   vnet_subnet_id                           = module.aks_network.subnet_ids[var.default_node_pool_subnet_name]
   default_node_pool_availability_zones     = var.default_node_pool_availability_zones
-  default_node_pool_node_labels            = var.default_node_pool_node_labels
-  default_node_pool_node_taints            = var.default_node_pool_node_taints
   default_node_pool_enable_auto_scaling    = var.default_node_pool_enable_auto_scaling
   default_node_pool_enable_host_encryption = var.default_node_pool_enable_host_encryption
   default_node_pool_enable_node_public_ip  = var.default_node_pool_enable_node_public_ip
